@@ -128,20 +128,6 @@ module "asg" {
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.allow_http_from_public_subnet.id, aws_security_group.allow_ssh_from_world.id]
 
-  # Run commands at launch
-  user_data     = <<-EOF
-                  #!/bin/bash
-                  sudo su
-                  yum -y install httpd
-                  mkdir -p /tmp/asg_demo/
-                  wget https://asg-demo-20210318.s3.amazonaws.com/asg_demo.tar.gz -P /tmp/asg_demo/
-                  tar -zxvf /tmp/asg_demo/asg_demo.tar.gz
-                  rm /tmp/asg_demo/asg_demo.tar.gz
-                  sudo mv /tmp/asg_demo/* /var/www/html/
-                  sudo systemctl enable httpd
-                  sudo systemctl start httpd
-                  EOF
-
   key_name = "rob-lk"
 
   # Auto scaling group
@@ -165,6 +151,20 @@ module "asg" {
       propagate_at_launch = true
     },
   ]
+
+  # Run commands at launch
+  user_data     = <<-EOF
+                  #!/bin/bash
+                  sudo su
+                  yum -y install httpd
+                  mkdir -p /tmp/asg_demo/
+                  wget https://asg-demo-20210318.s3.amazonaws.com/asg_demo.tar.gz -P /tmp/asg_demo/
+                  tar -zxvf /tmp/asg_demo/asg_demo.tar.gz -C /tmp/asg_demo/
+                  rm -f /tmp/asg_demo/asg_demo.tar.gz
+                  mv /tmp/asg_demo/* /var/www/html/
+                  systemctl enable httpd
+                  systemctl start httpd
+                  EOF
 }
 
 ######
