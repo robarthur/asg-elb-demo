@@ -9,3 +9,7 @@ output "alb_arn" {
 output "target_group_arns" {
   value = module.alb.target_group_arns
 }
+
+output "asg_id" {
+  value = module.asg.this_autoscaling_group_id
+}
